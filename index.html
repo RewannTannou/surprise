@@ -1,0 +1,853 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Une petite question…</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --pink: #ff6b57;
+        --pink-dark: #e8553f;
+        --pink-light: #ffeae6;
+        --bg1: #f4f1ec;
+        --bg2: #ebe6df;
+        --text: #2b2b2b;
+        --muted: #7a7a7a;
+        --card: #ffffff;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        font-family: "Poppins", sans-serif;
+        color: var(--text);
+        background: linear-gradient(135deg, var(--bg1), var(--bg2));
+        min-height: 100vh;
+        min-height: 100dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        overflow-x: hidden;
+      }
+
+      /* Coeurs flottants en fond */
+      .hearts {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 0;
+      }
+      .hearts span {
+        position: absolute;
+        bottom: -40px;
+        font-size: 24px;
+        opacity: 0.6;
+        animation: floatUp linear infinite;
+      }
+      @keyframes floatUp {
+        to {
+          transform: translateY(-110vh) rotate(30deg);
+          opacity: 0;
+        }
+      }
+
+      .card {
+        position: relative;
+        z-index: 1;
+        background: var(--card);
+        border-radius: 28px;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+        padding: 36px 28px;
+        width: 100%;
+        max-width: 480px;
+        text-align: center;
+      }
+      .step {
+        display: none;
+        animation: pop 0.45s ease;
+      }
+      .step.active {
+        display: block;
+      }
+      @keyframes pop {
+        from {
+          opacity: 0;
+          transform: scale(0.94) translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      .emoji-big {
+        font-size: 64px;
+        line-height: 1;
+        margin-bottom: 12px;
+      }
+      h1 {
+        font-weight: 700;
+        color: var(--text);
+        font-size: 28px;
+        line-height: 1.35;
+        margin-bottom: 8px;
+      }
+      h2 {
+        font-weight: 700;
+        color: var(--text);
+        font-size: 24px;
+        margin-bottom: 6px;
+      }
+      .sub {
+        color: var(--muted);
+        font-size: 15px;
+        margin-bottom: 24px;
+      }
+
+      .btn {
+        font-family: inherit;
+        font-size: 18px;
+        font-weight: 600;
+        border: none;
+        border-radius: 999px;
+        padding: 14px 36px;
+        cursor: pointer;
+        transition:
+          transform 0.15s ease,
+          background 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+      .btn:active {
+        transform: scale(0.96);
+      }
+      .btn-yes {
+        background: var(--pink);
+        color: #fff;
+        box-shadow: 0 6px 16px rgba(255, 107, 87, 0.3);
+      }
+      .btn-yes:hover {
+        background: var(--pink-dark);
+      }
+      .btn-no {
+        background: #f1f1f1;
+        color: #777;
+        transition:
+          left 0.25s ease,
+          top 0.25s ease,
+          transform 0.15s ease;
+      }
+      .btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+
+      .choice-row {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        align-items: center;
+        min-height: 70px;
+        flex-wrap: wrap;
+      }
+      #noMsg {
+        margin-top: 18px;
+        min-height: 22px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      /* Calendrier */
+      .cal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+      .cal-head button {
+        background: var(--pink-light);
+        color: var(--pink-dark);
+        border: none;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        font-size: 18px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .cal-head button:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+      .cal-title {
+        font-weight: 600;
+        text-transform: capitalize;
+      }
+      .cal-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 6px;
+        margin-bottom: 18px;
+      }
+      .cal-dow {
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 600;
+        padding: 4px 0;
+      }
+      .cal-day {
+        aspect-ratio: 1;
+        border: none;
+        background: #fafafa;
+        border-radius: 12px;
+        font-family: inherit;
+        font-size: 15px;
+        cursor: pointer;
+        color: var(--text);
+        transition:
+          background 0.15s ease,
+          transform 0.1s ease;
+      }
+      .cal-day:hover:not(:disabled) {
+        background: var(--pink-light);
+      }
+      .cal-day:disabled {
+        color: #ccc;
+        background: transparent;
+        cursor: not-allowed;
+      }
+      .cal-day.today {
+        outline: 2px solid var(--pink-light);
+      }
+      .cal-day.selected {
+        background: var(--pink);
+        color: #fff;
+        font-weight: 600;
+      }
+      .cal-empty {
+        visibility: hidden;
+      }
+
+      .time-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 22px;
+        font-size: 15px;
+        flex-wrap: wrap;
+      }
+      select,
+      input[type="text"],
+      textarea {
+        font-family: inherit;
+        font-size: 16px; /* 16px minimum : évite le zoom auto sur iPhone */
+        border: 2px solid var(--pink-light);
+        border-radius: 12px;
+        padding: 10px 12px;
+        color: var(--text);
+        background: #fff;
+        outline: none;
+      }
+      select:focus,
+      input:focus,
+      textarea:focus {
+        border-color: var(--pink);
+      }
+
+      /* Activités */
+      .act-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+      .act {
+        border: 2px solid var(--pink-light);
+        background: #fff;
+        border-radius: 16px;
+        padding: 14px 8px;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 14px;
+        color: var(--text);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.15s ease;
+      }
+      .act .ico {
+        font-size: 30px;
+      }
+      .act:hover {
+        border-color: var(--pink);
+      }
+      .act.selected {
+        background: var(--pink);
+        border-color: var(--pink);
+        color: #fff;
+        transform: scale(1.03);
+      }
+      .hint {
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 14px;
+      }
+
+      .field {
+        text-align: left;
+        margin-bottom: 14px;
+      }
+      .field label {
+        display: block;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .field input,
+      .field textarea {
+        width: 100%;
+      }
+      .field textarea {
+        resize: vertical;
+        min-height: 70px;
+      }
+
+      .recap {
+        background: var(--pink-light);
+        border-radius: 16px;
+        padding: 14px;
+        text-align: left;
+        font-size: 14px;
+        margin-bottom: 18px;
+        line-height: 1.7;
+      }
+      .nav-row {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .btn-back {
+        background: transparent;
+        color: var(--muted);
+        font-size: 15px;
+        padding: 12px 20px;
+      }
+      .error {
+        color: var(--pink-dark);
+        font-size: 14px;
+        margin-top: 12px;
+      }
+      .error a {
+        color: var(--pink-dark);
+      }
+
+      @media (max-width: 420px) {
+        .card {
+          padding: 28px 18px;
+        }
+        h1 {
+          font-size: 25px;
+        }
+        .btn {
+          font-size: 16px;
+          padding: 12px 28px;
+        }
+        h2 {
+          font-size: 21px;
+        }
+        .emoji-big {
+          font-size: 48px;
+        }
+        .act-grid {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 8px;
+        }
+        .act {
+          padding: 10px 4px;
+          font-size: 12px;
+        }
+        .act .ico {
+          font-size: 24px;
+        }
+        .cal-grid {
+          gap: 4px;
+        }
+        .cal-day {
+          font-size: 14px;
+          border-radius: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hearts" id="hearts"></div>
+
+    <main class="card">
+      <!-- Étape 1 : la question -->
+      <section class="step active" id="step-ask">
+        <div class="emoji-big">👀</div>
+        <h1>Est-ce que tu veux aller en date avec moi ?</h1>
+        <p class="sub">Petite question comme ça…</p>
+        <div class="choice-row" id="choiceRow">
+          <button class="btn btn-yes" id="yesBtn">Oui</button>
+          <button class="btn btn-no" id="noBtn">Non</button>
+        </div>
+        <p id="noMsg"></p>
+      </section>
+
+      <!-- Étape 2 : la date -->
+      <section class="step" id="step-date">
+        <div class="emoji-big">😄</div>
+        <h2>Cool ! Quand ça ?</h2>
+        <p class="sub">Choisis le jour qui t'arrange</p>
+
+        <div class="cal-head">
+          <button id="prevMonth" aria-label="Mois précédent">‹</button>
+          <div class="cal-title" id="calTitle"></div>
+          <button id="nextMonth" aria-label="Mois suivant">›</button>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+
+        <div class="time-row">
+          <label for="timeSelect">Vers quelle heure ?</label>
+          <select id="timeSelect"></select>
+        </div>
+
+        <button class="btn btn-yes" id="toActivity" disabled>Suivant →</button>
+      </section>
+
+      <!-- Étape 3 : l'activité -->
+      <section class="step" id="step-activity">
+        <div class="emoji-big">🎉</div>
+        <h2>On fait quoi ?</h2>
+        <p class="sub" id="dateReminder"></p>
+        <p class="hint">Tu peux en choisir plusieurs</p>
+
+        <div class="act-grid" id="actGrid"></div>
+
+        <div class="field">
+          <label for="msgInput">Un petit mot ? (facultatif)</label>
+          <textarea id="msgInput" placeholder="…"></textarea>
+        </div>
+
+        <div class="nav-row">
+          <button class="btn btn-back" id="backToDate">← Retour</button>
+          <button class="btn btn-yes" id="toRecap" disabled>Suivant →</button>
+        </div>
+      </section>
+
+      <!-- Étape 4 : récap + envoi -->
+      <section class="step" id="step-recap">
+        <div class="emoji-big">📝</div>
+        <h2>Récap</h2>
+        <p class="sub">Tout est bon ?</p>
+        <div class="recap" id="recapBox"></div>
+        <div class="nav-row">
+          <button class="btn btn-back" id="backToActivity">← Modifier</button>
+          <button class="btn btn-yes" id="sendBtn">Envoyer</button>
+        </div>
+        <p class="error" id="sendError"></p>
+      </section>
+
+      <!-- Étape 5 : merci -->
+      <section class="step" id="step-done">
+        <div class="emoji-big">🙌</div>
+        <h1>C'est noté !</h1>
+        <p class="sub">Hâte d'y être, à bientôt 😄</p>
+      </section>
+    </main>
+
+    <script>
+      // ====== Configuration ======
+      const EMAIL = "rewann.tannou@gmail.com";
+      // EmailJS (https://dashboard.emailjs.com) — le modèle du mail est dans email-template.html
+      const EMAILJS_PUBLIC_KEY = "MYrtw5_4pAnh_M_vq"; // Account > General > Public Key
+      const EMAILJS_SERVICE_ID = "service_0n58o8h"; // Email Services > ton service Gmail
+      const EMAILJS_TEMPLATE_ID = "template_b5rxari"; // Email Templates > ton modèle
+
+      const ACTIVITIES = [
+        { ico: "🎳", name: "Bowling" },
+        { ico: "🍝", name: "Restaurant" },
+        { ico: "🎲", name: "Bar à jeux" },
+        { ico: "🍸", name: "Bar" },
+        { ico: "⛸️", name: "Patinoire" },
+        { ico: "🛍️", name: "Shopping" },
+        { ico: "🎬", name: "Cinéma" },
+        { ico: "☕", name: "Café / Brunch" },
+        { ico: "🔐", name: "Escape game" },
+        { ico: "🕹️", name: "Arcade" },
+        { ico: "🎤", name: "Karaoké" },
+        { ico: "🖼️", name: "Musée / Expo" },
+        { ico: "🌳", name: "Balade au parc" },
+        { ico: "🏎️", name: "Karting" },
+        { ico: "🍦", name: "Glace / Dessert" },
+        { ico: "🧗", name: "Escalade" },
+      ];
+
+      // ====== État ======
+      const state = { date: null, time: "19:00", activities: new Set() };
+
+      // ====== Navigation ======
+      function show(id) {
+        document
+          .querySelectorAll(".step")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      // ====== Confettis ======
+      const heartsEl = document.getElementById("hearts");
+      const heartChars = ["🎉", "✨", "🎊"];
+
+      // ====== Bouton Non qui fuit ======
+      const noBtn = document.getElementById("noBtn");
+      const yesBtn = document.getElementById("yesBtn");
+      const noMsg = document.getElementById("noMsg");
+      const noTexts = [
+        "Tu es sûr(e) ? 🤨",
+        "Raté 😜",
+        "Essaie encore…",
+        "Nope, pas possible",
+        "Le bouton ne veut pas 🙈",
+        "Tu vas finir par dire oui",
+        "Allez, clique sur Oui !",
+        "Trop lent(e) 😂",
+      ];
+      let dodges = 0;
+
+      function dodge(e) {
+        if (e) e.preventDefault();
+        dodges++;
+
+        // Le bouton passe en position fixe la première fois
+        if (noBtn.style.position !== "fixed") {
+          const r = noBtn.getBoundingClientRect();
+          noBtn.style.position = "fixed";
+          noBtn.style.left = r.left + "px";
+          noBtn.style.top = r.top + "px";
+          noBtn.style.zIndex = 10;
+        }
+
+        const margin = 16;
+        const bw = noBtn.offsetWidth;
+        const bh = noBtn.offsetHeight;
+        const maxX = window.innerWidth - bw - margin;
+        const maxY = window.innerHeight - bh - margin;
+        const cur = noBtn.getBoundingClientRect();
+        const yes = yesBtn.getBoundingClientRect();
+
+        // Cherche une position loin de l'actuelle et qui ne recouvre pas le bouton Oui
+        let x,
+          y,
+          tries = 0;
+        do {
+          x = margin + Math.random() * Math.max(0, maxX - margin);
+          y = margin + Math.random() * Math.max(0, maxY - margin);
+          tries++;
+          const farEnough = Math.hypot(x - cur.left, y - cur.top) > 120;
+          const overlapsYes =
+            x < yes.right + 10 &&
+            x + bw > yes.left - 10 &&
+            y < yes.bottom + 10 &&
+            y + bh > yes.top - 10;
+          if (farEnough && !overlapsYes) break;
+        } while (tries < 50);
+
+        noBtn.style.left = x + "px";
+        noBtn.style.top = y + "px";
+
+        noMsg.textContent = noTexts[(dodges - 1) % noTexts.length];
+
+        // Le bouton Oui grossit un peu à chaque tentative
+        const scale = Math.min(1 + dodges * 0.08, window.innerWidth < 420 ? 1.5 : 1.8);
+        yesBtn.style.transform = `scale(${scale})`;
+      }
+
+      noBtn.addEventListener("mouseenter", dodge);
+      noBtn.addEventListener("touchstart", dodge, { passive: false });
+      noBtn.addEventListener("click", dodge);
+      noBtn.addEventListener("focus", dodge);
+
+      // Esquive aussi quand la souris s'approche
+      document.addEventListener("mousemove", (e) => {
+        if (!document.getElementById("step-ask").classList.contains("active"))
+          return;
+        const r = noBtn.getBoundingClientRect();
+        const cx = r.left + r.width / 2,
+          cy = r.top + r.height / 2;
+        if (Math.hypot(e.clientX - cx, e.clientY - cy) < 70) dodge();
+      });
+
+      yesBtn.addEventListener("click", () => {
+        noBtn.style.display = "none";
+        show("step-date");
+        renderCalendar();
+      });
+
+      // ====== Calendrier ======
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      let viewYear = today.getFullYear();
+      let viewMonth = today.getMonth();
+
+      const calGrid = document.getElementById("calGrid");
+      const calTitle = document.getElementById("calTitle");
+      const prevBtn = document.getElementById("prevMonth");
+      const nextBtn = document.getElementById("nextMonth");
+      const toActivity = document.getElementById("toActivity");
+
+      function renderCalendar() {
+        calGrid.innerHTML = "";
+        ["L", "M", "M", "J", "V", "S", "D"].forEach((d) => {
+          const el = document.createElement("div");
+          el.className = "cal-dow";
+          el.textContent = d;
+          calGrid.appendChild(el);
+        });
+
+        const first = new Date(viewYear, viewMonth, 1);
+        calTitle.textContent = first.toLocaleDateString("fr-FR", {
+          month: "long",
+          year: "numeric",
+        });
+
+        const offset = (first.getDay() + 6) % 7; // lundi = 0
+        for (let i = 0; i < offset; i++) {
+          const el = document.createElement("div");
+          el.className = "cal-empty";
+          calGrid.appendChild(el);
+        }
+
+        const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+        for (let d = 1; d <= daysInMonth; d++) {
+          const date = new Date(viewYear, viewMonth, d);
+          const btn = document.createElement("button");
+          btn.className = "cal-day";
+          btn.textContent = d;
+          if (date < today) btn.disabled = true;
+          if (date.getTime() === today.getTime()) btn.classList.add("today");
+          if (state.date && date.getTime() === state.date.getTime())
+            btn.classList.add("selected");
+          btn.addEventListener("click", () => {
+            state.date = date;
+            toActivity.disabled = false;
+            renderCalendar();
+          });
+          calGrid.appendChild(btn);
+        }
+
+        prevBtn.disabled =
+          viewYear === today.getFullYear() && viewMonth === today.getMonth();
+      }
+
+      prevBtn.addEventListener("click", () => {
+        viewMonth--;
+        if (viewMonth < 0) {
+          viewMonth = 11;
+          viewYear--;
+        }
+        renderCalendar();
+      });
+      nextBtn.addEventListener("click", () => {
+        viewMonth++;
+        if (viewMonth > 11) {
+          viewMonth = 0;
+          viewYear++;
+        }
+        renderCalendar();
+      });
+
+      // Heures proposées
+      const timeSelect = document.getElementById("timeSelect");
+      for (let h = 10; h <= 23; h++) {
+        ["00", "30"].forEach((m) => {
+          const v = `${String(h).padStart(2, "0")}:${m}`;
+          const opt = document.createElement("option");
+          opt.value = v;
+          opt.textContent = v.replace(":", "h");
+          if (v === state.time) opt.selected = true;
+          timeSelect.appendChild(opt);
+        });
+      }
+      timeSelect.addEventListener(
+        "change",
+        () => (state.time = timeSelect.value),
+      );
+
+      function formatDate(d) {
+        const s = d.toLocaleDateString("fr-FR", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        });
+        return s.charAt(0).toUpperCase() + s.slice(1);
+      }
+      const formatTime = (t) => t.replace(":", "h");
+
+      toActivity.addEventListener("click", () => {
+        document.getElementById("dateReminder").textContent =
+          `${formatDate(state.date)} à ${formatTime(state.time)}`;
+        show("step-activity");
+      });
+
+      // ====== Activités ======
+      const actGrid = document.getElementById("actGrid");
+      const toRecap = document.getElementById("toRecap");
+      const msgInput = document.getElementById("msgInput");
+
+      function updateRecapBtn() {
+        toRecap.disabled = state.activities.size === 0;
+      }
+
+      ACTIVITIES.forEach((a) => {
+        const btn = document.createElement("button");
+        btn.className = "act";
+        btn.innerHTML = `<span class="ico">${a.ico}</span><span>${a.name}</span>`;
+        btn.addEventListener("click", () => {
+          const label = `${a.ico} ${a.name}`;
+          if (state.activities.has(label)) {
+            state.activities.delete(label);
+            btn.classList.remove("selected");
+          } else {
+            state.activities.add(label);
+            btn.classList.add("selected");
+          }
+          updateRecapBtn();
+        });
+        actGrid.appendChild(btn);
+      });
+
+      document
+        .getElementById("backToDate")
+        .addEventListener("click", () => show("step-date"));
+
+      // ====== Récap ======
+      const recapBox = document.getElementById("recapBox");
+      const escapeHtml = (s) =>
+        s.replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+
+      toRecap.addEventListener("click", () => {
+        const msg = msgInput.value.trim();
+        recapBox.innerHTML = `
+      <div><strong>📅 Date :</strong> ${formatDate(state.date)}</div>
+      <div><strong>⏰ Heure :</strong> ${formatTime(state.time)}</div>
+      <div><strong>🎯 Activité(s) :</strong> ${[...state.activities].join(", ")}</div>
+      ${msg ? `<div><strong>💬 Mot :</strong> ${escapeHtml(msg)}</div>` : ""}
+    `;
+        document.getElementById("sendError").innerHTML = "";
+        show("step-recap");
+      });
+
+      document
+        .getElementById("backToActivity")
+        .addEventListener("click", () => show("step-activity"));
+
+      // ====== Envoi par email (EmailJS) ======
+      const sendBtn = document.getElementById("sendBtn");
+      const sendError = document.getElementById("sendError");
+
+      sendBtn.addEventListener("click", async () => {
+        const msg = msgInput.value.trim();
+        const acts = [...state.activities];
+        const tentatives =
+          dodges === 0
+            ? "Aucune, direct oui 😎"
+            : `${dodges} fois avant de craquer 😂`;
+
+        // Variables utilisées dans le modèle EmailJS ({{date}}, {{heure}}…)
+        const params = {
+          date: formatDate(state.date),
+          heure: formatTime(state.time),
+          activites: acts.join(" · "),
+          activites_html: acts
+            .map(
+              (a) =>
+                `<span style="display:inline-block;background:#ffeae6;color:#e8553f;border-radius:999px;padding:8px 14px;margin:0 6px 8px 0;font-size:15px;font-weight:600;">${a}</span>`,
+            )
+            .join(""),
+          message: msg || "Pas de message",
+          tentatives,
+        };
+
+        sendBtn.disabled = true;
+        sendBtn.textContent = "Envoi…";
+        sendError.innerHTML = "";
+
+        try {
+          const res = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              service_id: EMAILJS_SERVICE_ID,
+              template_id: EMAILJS_TEMPLATE_ID,
+              user_id: EMAILJS_PUBLIC_KEY,
+              template_params: params,
+            }),
+          });
+          const text = await res.text();
+          console.log("Réponse EmailJS :", res.status, text);
+          if (!res.ok) throw new Error(text || "Erreur");
+          show("step-done");
+          celebrate();
+        } catch (err) {
+          // Solution de secours : ouvrir l'appli mail
+          const subject = `Elle a dit oui ! ${params.date} à ${params.heure}`;
+          const body = [
+            `Date : ${params.date}`,
+            `Heure : ${params.heure}`,
+            `Activité(s) : ${params.activites}`,
+            `Petit mot : ${params.message}`,
+            `Tentatives sur Non : ${tentatives}`,
+          ].join("\n");
+          const mailto = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+          sendError.innerHTML = `Oups, l'envoi n'a pas marché 😢<br><a href="${mailto}">Clique ici pour l'envoyer par mail</a>`;
+          sendBtn.disabled = false;
+          sendBtn.textContent = "Réessayer";
+        }
+      });
+
+      // ====== Confettis finaux ======
+      function celebrate() {
+        for (let i = 0; i < 40; i++) {
+          const h = document.createElement("span");
+          h.textContent = heartChars[i % heartChars.length];
+          h.style.left = Math.random() * 100 + "vw";
+          h.style.fontSize = 18 + Math.random() * 28 + "px";
+          h.style.animationDuration = 3 + Math.random() * 4 + "s";
+          h.style.animationDelay = Math.random() * 1.5 + "s";
+          h.style.opacity = 1;
+          heartsEl.appendChild(h);
+        }
+      }
+    </script>
+  </body>
+</html>

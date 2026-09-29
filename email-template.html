@@ -1,0 +1,64 @@
+<!-- Modèle à coller dans EmailJS : Email Templates > ton modèle > Content > "Edit Content" > "Code Editor" -->
+<div style="margin:0;padding:32px 12px;background:#f4f1ec;font-family:'Helvetica Neue',Arial,sans-serif;color:#2b2b2b;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;margin:0 auto;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.08);">
+
+    <!-- En-tête -->
+    <tr>
+      <td style="background:#ff6b57;padding:36px 28px;text-align:center;">
+        <div style="font-size:52px;line-height:1;margin-bottom:12px;">🙌</div>
+        <div style="font-size:28px;font-weight:700;color:#ffffff;margin-bottom:6px;">Elle a dit oui !</div>
+        <div style="font-size:15px;color:#ffe3dd;">Voici ce qu'elle a choisi</div>
+      </td>
+    </tr>
+
+    <!-- Date et heure -->
+    <tr>
+      <td style="padding:28px 28px 8px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td width="50%" style="padding-right:6px;vertical-align:top;">
+              <div style="background:#f4f1ec;border-radius:14px;padding:16px;">
+                <div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7a7a7a;margin-bottom:6px;">📅 Date</div>
+                <div style="font-size:16px;font-weight:700;">{{date}}</div>
+              </div>
+            </td>
+            <td width="50%" style="padding-left:6px;vertical-align:top;">
+              <div style="background:#f4f1ec;border-radius:14px;padding:16px;">
+                <div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7a7a7a;margin-bottom:6px;">⏰ Heure</div>
+                <div style="font-size:16px;font-weight:700;">{{heure}}</div>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <!-- Activités -->
+    <tr>
+      <td style="padding:20px 28px 4px;">
+        <div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7a7a7a;margin-bottom:10px;">🎯 Activité(s)</div>
+        <div>{{{activites_html}}}</div>
+      </td>
+    </tr>
+
+    <!-- Petit mot -->
+    <tr>
+      <td style="padding:16px 28px 8px;">
+        <div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7a7a7a;margin-bottom:10px;">💬 Son petit mot</div>
+        <div style="border-left:4px solid #ff6b57;background:#fff7f5;border-radius:0 12px 12px 0;padding:14px 16px;font-size:15px;line-height:1.5;font-style:italic;">{{message}}</div>
+      </td>
+    </tr>
+
+    <!-- Tentatives -->
+    <tr>
+      <td style="padding:20px 28px 32px;">
+        <div style="text-align:center;background:#f4f1ec;border-radius:14px;padding:14px;font-size:14px;color:#555;">
+          🙈 Tentatives sur « Non » : <strong>{{tentatives}}</strong>
+        </div>
+      </td>
+    </tr>
+
+  </table>
+
+  <div style="text-align:center;font-size:12px;color:#9a9a9a;margin-top:18px;">Envoyé depuis ton site de date</div>
+</div>
